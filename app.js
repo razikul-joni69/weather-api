@@ -9,21 +9,31 @@ document.getElementById("search-field").addEventListener("keypress", function (e
 const KEY = '629da55c6d95ad4cbca013af30e27fc5';
 const searchItems = () =>{
     const searchText =document.getElementById('search-field').value;
-    if(searchText==''){
-        document.getElementById('city-title').innerText = data.name || "Unknown Location";
-    }
-    else{
-        const url = `https://api.openweathermap.org/data/2.5/weather?q=${searchText}&units=metric&appid=${KEY}`
+    const url = `https://api.openweathermap.org/data/2.5/weather?q=${searchText}&units=metric&appid=${KEY}`
     fetch(url)
         .then(response =>response.json())
         .then(data => showUpdates(data))
-    }
+    .catch(error => showError())
+    toggleSpinner();
 }
-
+//show Error 
+const showError = () =>{
+    document.getElementById('city').classList.add('d-none');
+    document.getElementById('show-error').innerText = 'Unknown Location';
+    toggleSpinner();
+}
+//show weather showUpdates
 const showUpdates = data => {
-    document.getElementById('city-title').innerText = data.name || "Unknown Location";
-    document.getElementById('city-temp').innerText = `${data.main.temp} &deg; C`;
+    document.getElementById('show-error').innerText = '';
+    document.getElementById('city').classList.remove('d-none');
+    document.getElementById('city-title').innerText = data.name || '';
+    document.getElementById('city-temp').innerHTML = `${data.main.temp} <span>&deg;C</span>`;
     document.getElementById('city-lead').innerText = data.weather[0].main;
     document.getElementById('icon').setAttribute('src', `https://openweathermap.org/img/wn/${data.weather[0].icon}@2x.png`);
-    document.getElementById('city').value = "";
+    toggleSpinner();
+}
+//spinner
+const toggleSpinner = () => {
+    const spinner = document.getElementById('loading-spinner');
+    spinner.classList.toggle('d-none');
 }
